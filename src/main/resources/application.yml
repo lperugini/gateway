@@ -4,7 +4,20 @@ server:
 spring:
   application:
     name: pfgateway
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: user
+    password: password
+    template:
+      retry:
+        enabled: true
+        max-attempts: 3
+        initial-interval: 1000
+        multiplier: 2.0
+        max-interval: 5000
 
 jwt:
   expiration: 3600000
   secret: ROWS0BIAS0COIL0WENT0IONS0COED0OWNS0SEND0MARS0LYRA0BAWL0DAY0DEER0IS0BID0OVER0SCAT0WISE0DEAD0HO0LOY0STIR0DADE0ALAN
+

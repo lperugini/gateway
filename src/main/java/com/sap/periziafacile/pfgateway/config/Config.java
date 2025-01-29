@@ -9,25 +9,36 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
 
-import com.sap.periziafacile.pfgateway.filters.auth.MockAuthFilter;
-import com.sap.periziafacile.pfgateway.filters.auth.MockLoginFilter;
+import com.sap.periziafacile.pfgateway.filters.auth.AuthFilter;
+import com.sap.periziafacile.pfgateway.filters.auth.LoginFilter;
 import com.sap.periziafacile.pfgateway.filters.auth.MockRegisterFilter;
+import com.sap.periziafacile.pfgateway.filters.composition.OrderCollectionCompositionFilter;
+import com.sap.periziafacile.pfgateway.filters.composition.SingleOrderCompositionFilter;
 import com.sap.periziafacile.pfgateway.filters.item.MockItemFilter;
 import com.sap.periziafacile.pfgateway.filters.item.MockSingleItemFilter;
+import com.sap.periziafacile.pfgateway.filters.order.OrderPublishFilter;
 import com.sap.periziafacile.pfgateway.filters.user.MockPeronalInfoFilter;
 import com.sap.periziafacile.pfgateway.filters.user.MockSingleUserFilter;
 import com.sap.periziafacile.pfgateway.filters.user.MockUserFilter;
 
+import reactor.core.publisher.Mono;
+
 @Configuration
 public class Config {
+
+        private final String GATEWAYURL = "http://localhost:8080";
+        private final String ORDERSERVICEURL = "http://localhost:8083";
 
         @Bean
         RouteLocator customRouteLocator(
                         RouteLocatorBuilder builder,
+                        SingleOrderCompositionFilter singleOrderCompositionFilter,
+                        OrderCollectionCompositionFilter orderCollectionCompositionFilter,
+                        OrderPublishFilter orderPublishFilter,
                         MockRegisterFilter mockRegisterFilter,
-                        MockLoginFilter mockLoginFilter,
+                        LoginFilter loginFilter,
                         MockPeronalInfoFilter mockPersonalInfoFilter,
-                        MockAuthFilter mockAuthFilter,
+                        AuthFilter mockAuthFilter,
                         MockSingleUserFilter mockSingleUserFilter,
                         MockSingleItemFilter mockSingleItemFilter,
                         MockUserFilter mockUserFilter,
@@ -45,7 +56,7 @@ public class Config {
                                                 .path("/login")
                                                 .and()
                                                 .method(HttpMethod.POST)
-                                                .filters(f -> f.filter(mockLoginFilter))
+                                                .filters(f -> f.filter(loginFilter))
                                                 .uri("no://op"))
                                 /* ITEMS */
                                 .route("getitem", r -> r // no-auth needed
@@ -64,7 +75,7 @@ public class Config {
                                                 .path("/items")
                                                 .and()
                                                 .method(HttpMethod.POST)
-                                                .filters(f -> f.filter(new MockAuthFilter(List.of("admin")))
+                                                .filters(f -> f.filter(new AuthFilter(List.of("admin")))
                                                                 .filter(mockItemFilter))
                                                 .uri("no://op"))
                                 .route("putitem", r -> r
@@ -72,14 +83,14 @@ public class Config {
                                                 .and()
                                                 .method(HttpMethod.PUT)
                                                 .filters(f -> f
-                                                                .filter(new MockAuthFilter(List.of("admin")))
+                                                                .filter(new AuthFilter(List.of("admin")))
                                                                 .filter(mockSingleItemFilter))
                                                 .uri("no://op"))
                                 .route("deleteitem", r -> r
                                                 .path("/items/{id}")
                                                 .and()
                                                 .method(HttpMethod.DELETE)
-                                                .filters(f -> f.filter(new MockAuthFilter(List.of("admin")))
+                                                .filters(f -> f.filter(new AuthFilter(List.of("admin")))
                                                                 .filter(mockSingleItemFilter))
                                                 .uri("no://op"))
                                 /* USERS */
@@ -87,7 +98,7 @@ public class Config {
                                                 .path("/me")
                                                 .and()
                                                 .method(HttpMethod.GET)
-                                                .filters(f -> f.filter(new MockAuthFilter(
+                                                .filters(f -> f.filter(new AuthFilter(
                                                                 List.of("user", "admin", "collaborator")))
                                                                 .filter(mockPersonalInfoFilter))
                                                 .uri("no://op"))
@@ -95,21 +106,21 @@ public class Config {
                                                 .path("/users")
                                                 .and()
                                                 .method(HttpMethod.GET)
-                                                .filters(f -> f.filter(new MockAuthFilter(List.of("admin")))
+                                                .filters(f -> f.filter(new AuthFilter(List.of("admin")))
                                                                 .filter(mockUserFilter))
                                                 .uri("no://op"))
                                 .route("user", r -> r
                                                 .path("/users/{id}")
                                                 .and()
                                                 .method(HttpMethod.GET)
-                                                .filters(f -> f.filter(new MockAuthFilter(List.of("admin")))
+                                                .filters(f -> f.filter(new AuthFilter(List.of("admin")))
                                                                 .filter(mockSingleUserFilter))
                                                 .uri("no://op"))
                                 .route("postuser", r -> r
                                                 .path("/users")
                                                 .and()
                                                 .method(HttpMethod.POST)
-                                                .filters(f -> f.filter(new MockAuthFilter(List.of("admin")))
+                                                .filters(f -> f.filter(new AuthFilter(List.of("admin")))
                                                                 .filter(mockUserFilter))
                                                 .uri("no://op"))
                                 .route("putuser", r -> r
@@ -117,21 +128,86 @@ public class Config {
                                                 .and()
                                                 .method(HttpMethod.PUT)
                                                 .filters(f -> f
-                                                                .filter(new MockAuthFilter(List.of("admin")))
+                                                                .filter(new AuthFilter(List.of("admin")))
                                                                 .filter(mockSingleUserFilter))
                                                 .uri("no://op"))
                                 .route("deleteuser", r -> r
                                                 .path("/users/{id}")
                                                 .and()
                                                 .method(HttpMethod.DELETE)
-                                                .filters(f -> f.filter(new MockAuthFilter(List.of("admin")))
+                                                .filters(f -> f.filter(new AuthFilter(List.of("admin")))
                                                                 .filter(mockSingleUserFilter))
                                                 .uri("no://op"))
-                                /* FINIRE */
-
                                 /* ORDERS */
-
-                                /* PAYMENTS */
+                                .route("getorders", r -> r
+                                                .path("/orders")
+                                                .and()
+                                                .method(HttpMethod.GET)
+                                                .filters(f -> f.filter(new AuthFilter(List.of("admin")))
+                                                                .filter(orderCollectionCompositionFilter)
+                                                                .modifyResponseBody(String.class, String.class,
+                                                                                (exchange, originalBody) -> {
+                                                                                        return Mono.just(originalBody
+                                                                                                        .replace(ORDERSERVICEURL,
+                                                                                                                        GATEWAYURL));
+                                                                                }))
+                                                .uri(ORDERSERVICEURL))
+                                .route("order", r -> r
+                                                .path("/orders/{id}")
+                                                .and()
+                                                .method(HttpMethod.GET)
+                                                .filters(f -> f
+                                                                .filter(new AuthFilter(List.of("admin")))
+                                                                .filter(singleOrderCompositionFilter)
+                                                                .modifyResponseBody(String.class, String.class,
+                                                                                (exchange, originalBody) -> {
+                                                                                        return Mono.just(originalBody
+                                                                                                        .replace(ORDERSERVICEURL,
+                                                                                                                        GATEWAYURL));
+                                                                                }))
+                                                .uri(ORDERSERVICEURL))
+                                .route("postorder", r -> r
+                                                .path("/orders")
+                                                .and()
+                                                .method(HttpMethod.POST)
+                                                .filters(f -> f
+                                                                //.filter(new AuthFilter(List.of("user")))
+                                                                .filter(orderPublishFilter)
+                                                                .modifyResponseBody(String.class, String.class,
+                                                                                (exchange, originalBody) -> {
+                                                                                        return Mono.just(originalBody
+                                                                                                        .replace(ORDERSERVICEURL,
+                                                                                                                        GATEWAYURL));
+                                                                                }))
+                                                .uri(ORDERSERVICEURL))
+                                .route("putorder", r -> r
+                                                .path("/orders/{id}")
+                                                .and()
+                                                .method(HttpMethod.PUT)
+                                                .filters(f -> f
+                                                                .filter(new AuthFilter(List.of(
+                                                                                "user",
+                                                                                "collaborator",
+                                                                                "admin")))
+                                                                .modifyResponseBody(String.class, String.class,
+                                                                                (exchange, originalBody) -> {
+                                                                                        return Mono.just(originalBody
+                                                                                                        .replace(ORDERSERVICEURL,
+                                                                                                                        GATEWAYURL));
+                                                                                }))
+                                                .uri(ORDERSERVICEURL))
+                                .route("deleteorder", r -> r
+                                                .path("/orders/{id}")
+                                                .and()
+                                                .method(HttpMethod.DELETE)
+                                                .filters(f -> f.filter(new AuthFilter(List.of("user", "admin")))
+                                                                .modifyResponseBody(String.class, String.class,
+                                                                                (exchange, originalBody) -> {
+                                                                                        return Mono.just(originalBody
+                                                                                                        .replace(ORDERSERVICEURL,
+                                                                                                                        GATEWAYURL));
+                                                                                }))
+                                                .uri(ORDERSERVICEURL))
 
                                 .build();
         }

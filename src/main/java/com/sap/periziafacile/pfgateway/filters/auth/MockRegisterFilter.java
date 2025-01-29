@@ -51,7 +51,6 @@ public class MockRegisterFilter implements GatewayFilter {
 
                         Optional<JSONObject> optionalUser = mockUserService.getByUsername(username);
                         if (optionalUser.isEmpty()) {
-                            System.out.println("Adding new User");
                             Optional<JSONObject> newUser = mockUserService
                                     .addUser(new JSONObject()
                                             .put("username", username)

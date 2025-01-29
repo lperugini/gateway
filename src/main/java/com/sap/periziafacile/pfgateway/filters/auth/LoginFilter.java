@@ -21,14 +21,14 @@ import com.sap.periziafacile.pfgateway.utils.ResponseUtil;
 import reactor.core.publisher.Mono;
 
 @Component
-public class MockLoginFilter implements GatewayFilter {
+public class LoginFilter implements GatewayFilter {
 
     private final ObjectMapper objectMapper = new ObjectMapper(); // Per deserializzare JSON
-    private final ResponseUtil responseUtil = new ResponseUtil(); 
+    private final ResponseUtil responseUtil = new ResponseUtil();
 
     private final MockUserService mockUserService;
 
-    public MockLoginFilter(MockUserService mockUserService) {
+    public LoginFilter(MockUserService mockUserService) {
         this.mockUserService = mockUserService;
     }
 
@@ -59,13 +59,14 @@ public class MockLoginFilter implements GatewayFilter {
                         JSONObject foundUser = optionalUser.get();
                         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-                        System.out.println("Request Body as Map: " + user);
-
                         if (!passwordEncoder.matches(password, foundUser.getString("password"))) {
                             return this.responseUtil.writeErrorResponse(exchange, "Wrong credentials.");
                         }
 
-                        String token = new JwtUtil().generateToken(username, foundUser.getString("role"));
+                        String token = new JwtUtil().generateToken(
+                                username,
+                                Long.valueOf(foundUser.get("id").toString()),
+                                foundUser.getString("role"));
                         Map<String, String> response = Map.of("token", token);
 
                         // Restituisci una risposta con lo stesso contenuto della mappa

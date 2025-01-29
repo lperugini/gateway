@@ -14,12 +14,12 @@ import com.sap.periziafacile.pfgateway.utils.JwtUtil;
 import reactor.core.publisher.Mono;
 
 @Component
-public class MockAuthFilter implements GatewayFilter {
+public class AuthFilter implements GatewayFilter {
 
         private final JwtUtil jwtUtil;
         private final List<String> acceptedRoles;
 
-        public MockAuthFilter(List<String> acceptedRoles) {
+        public AuthFilter(List<String> acceptedRoles) {
                 this.jwtUtil = new JwtUtil();
                 this.acceptedRoles = acceptedRoles;
         }
@@ -33,7 +33,7 @@ public class MockAuthFilter implements GatewayFilter {
 
                 String auth = headers.get("Authorization").stream().findFirst().orElse("");
 
-                if (!(auth != "" && auth.startsWith("Bearer ")))
+                if (!(auth.equals("") && auth.startsWith("Bearer ")))
                         return returnUnauthorized(exchange);
 
                 String token = auth.substring(7);
@@ -46,8 +46,8 @@ public class MockAuthFilter implements GatewayFilter {
                 if (!this.acceptedRoles.contains(role))
                         return returnUnauthorized(exchange);
 
-                String loggedUsername = this.jwtUtil.getUsernameFromToken(token);
-                exchange.getAttributes().put("logged_username", loggedUsername);
+                exchange.getAttributes().put("logged_username", this.jwtUtil.getUsernameFromToken(token));
+                exchange.getAttributes().put("logged_id", this.jwtUtil.getUsernameFromToken(token));
 
                 return chain.filter(exchange);
         }

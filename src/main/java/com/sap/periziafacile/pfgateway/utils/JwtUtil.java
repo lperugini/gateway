@@ -15,15 +15,11 @@ public class JwtUtil {
 
     private final long expiration = 3600000L;
 
-    public String generateToken(String username) {
-        return generateToken(username, "user"); // user by default
-    }
-
-    public String generateToken(String username, String role) {
-        System.out.println("Build token for " + username + " with role: " + role);
+    public String generateToken(String username, Long id, String role) {
         return Jwts
                 .builder()
                 .subject(username)
+                .claim("id", id)
                 .claim("role", role)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiration))
@@ -56,8 +52,17 @@ public class JwtUtil {
         return (String) claims.get("role");
     }
 
+    public String getIdFromToken(String token) {
+        Claims claims = Jwts
+                .parser()
+                .verifyWith(getKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+        return (String) claims.get("id");
+    }
+    
     public boolean validateToken(String token) {
-        System.out.println("Validating token");
         try {
             Jwts
                     .parser()
