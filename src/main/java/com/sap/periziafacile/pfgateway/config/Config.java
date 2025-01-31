@@ -47,13 +47,13 @@ public class Config {
                 return builder
                                 .routes()
                                 .route("register", r -> r // no-auth needed
-                                                .path("/register")
+                                                .path("/auth/register")
                                                 .and()
                                                 .method(HttpMethod.POST)
                                                 .filters(f -> f.filter(mockRegisterFilter))
                                                 .uri("no://op"))
                                 .route("login", r -> r // no-auth needed
-                                                .path("/login")
+                                                .path("/auth/login")
                                                 .and()
                                                 .method(HttpMethod.POST)
                                                 .filters(f -> f.filter(loginFilter))
@@ -171,7 +171,7 @@ public class Config {
                                                 .and()
                                                 .method(HttpMethod.POST)
                                                 .filters(f -> f
-                                                                //.filter(new AuthFilter(List.of("user")))
+                                                                .filter(new AuthFilter(List.of("user")))
                                                                 .filter(orderPublishFilter)
                                                                 .modifyResponseBody(String.class, String.class,
                                                                                 (exchange, originalBody) -> {
@@ -185,10 +185,10 @@ public class Config {
                                                 .and()
                                                 .method(HttpMethod.PUT)
                                                 .filters(f -> f
-                                                                .filter(new AuthFilter(List.of(
+                                                                /* .filter(new AuthFilter(List.of(
                                                                                 "user",
                                                                                 "collaborator",
-                                                                                "admin")))
+                                                                                "admin"))) */
                                                                 .modifyResponseBody(String.class, String.class,
                                                                                 (exchange, originalBody) -> {
                                                                                         return Mono.just(originalBody
