@@ -95,7 +95,7 @@ public class Config {
                                                 .uri("no://op"))
                                 /* USERS */
                                 .route("me", r -> r
-                                                .path("/me")
+                                                .path("/users/me")
                                                 .and()
                                                 .method(HttpMethod.GET)
                                                 .filters(f -> f.filter(new AuthFilter(

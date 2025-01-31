@@ -142,10 +142,13 @@ docker-compose up --build
   ```
 
 - **Login:**
+
   ```http
-  POST /users/login
+  POST /auth/login
   ```
+
   Body JSON:
+
   ```json
   {
     "username": "utente1",
@@ -153,12 +156,46 @@ docker-compose up --build
   }
   ```
 
-### **Gestione Ordini**
-
-- **Creazione ordine:**
+- **Recupero informazioni utente loggato:**
 
   ```http
-  POST /orders
+  GET /users/me
+  ```
+
+  Header richiesto:
+
+  ```http
+  Authorization: Bearer <token>
+  ```
+
+- **Recupero informazioni utenti:**
+
+  ```http
+  GET /users
+  ```
+
+  Header richiesto:
+
+  ```http
+  Authorization: Bearer <token>
+  ```
+
+- **Recupero informazioni utente per ID:**
+
+  ```http
+  GET /users/{userId}
+  ```
+
+  Header richiesto:
+
+  ```http
+  Authorization: Bearer <token>
+  ```
+
+- **Inserimento nuovo utente:**
+
+  ```http
+  POST /users
   ```
 
   Header richiesto:
@@ -171,9 +208,57 @@ docker-compose up --build
 
   ```json
   {
-    "userId": "123",
-    "items": [{ "id": "456", "quantity": 2 }]
+    "username": "utente2",
+    "password": "password321"
   }
+  ```
+
+- **Modifica informazioni utente esistente:**
+
+  ```http
+  PUT /users
+  ```
+
+  Header richiesto:
+
+  ```http
+  Authorization: Bearer <token>
+  ```
+
+  Body JSON:
+
+  ```json
+  {
+    "firstName": "firstName",
+    "lastName": "lastName",
+    "e_mail": "address@email.com"
+  }
+  ```
+
+- **Rimozione di un utente esistente:**
+
+  ```http
+  DELETE /users
+  ```
+
+  Header richiesto:
+
+  ```http
+  Authorization: Bearer <token>
+  ```
+
+### **Gestione Ordini**
+
+- **Recupero ordini:**
+
+  ```http
+  GET /orders
+  ```
+
+  Header richiesto:
+
+  ```http
+  Authorization: Bearer <token>
   ```
 
 - **Recupero ordine per ID:**
@@ -203,12 +288,12 @@ docker-compose up --build
   Body JSON:
 
   ```json
-    {
-        "user": 1,
-        "description": "...",
-        "price": 9.99,
-        "item": 1
-    }
+  {
+    "user": 1,
+    "description": "...",
+    "price": 9.99,
+    "item": 1
+  }
   ```
 
 - **Modifica di un ordine esistente:**
@@ -226,13 +311,13 @@ docker-compose up --build
   Body JSON:
 
   ```json
-    {
-        "id": 1,
-        "user": 1,
-        "description": "...",
-        "price": 9.99,
-        "item": 1
-    }
+  {
+    "id": 1,
+    "user": 1,
+    "description": "...",
+    "price": 9.99,
+    "item": 1
+  }
   ```
 
 - **Rimozione di un ordine esistente:**
@@ -258,10 +343,10 @@ docker-compose up --build
   GET /items/{itemId}
   ```
 
-- **Modifica di un prodotto esistente:**
+- **Inserimento di un prodotto :**
 
   ```http
-  PUT /items/{orderId}
+  POST /items
   ```
 
   Header richiesto:
@@ -273,11 +358,33 @@ docker-compose up --build
   Body JSON:
 
   ```json
-    {
-        "price": 150.0,
-        "name": "...",
-        "description": "...",
-    }
+  {
+    "price": 22.0,
+    "name": "...",
+    "description": "..."
+  }
+  ```
+
+- **Modifica di un prodotto esistente:**
+
+  ```http
+  PUT /items/{itemId}
+  ```
+
+  Header richiesto:
+
+  ```http
+  Authorization: Bearer <token>
+  ```
+
+  Body JSON:
+
+  ```json
+  {
+    "price": 150.0,
+    "name": "...",
+    "description": "..."
+  }
   ```
 
 - **Rimozione di un prodotto esistente:**
@@ -293,4 +400,5 @@ docker-compose up --build
   ```
 
 ---
+
 **Autore:** _Leonardo Perugini - leonardo.perugini2@studio.unibo.it_

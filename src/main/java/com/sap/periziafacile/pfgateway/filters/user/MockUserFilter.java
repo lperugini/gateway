@@ -56,20 +56,20 @@ public class MockUserFilter implements GatewayFilter {
 
                                         try {
                                                 // Converti il JSON in una mappa
-                                                Map<String, String> item = objectMapper.readValue(body,
+                                                Map<String, String> user = objectMapper.readValue(body,
                                                                 new TypeReference<>() {
                                                                 });
 
-                                                Optional<JSONObject> optionalItem = mockUserService
-                                                                .addUser(new JSONObject(item));
+                                                Optional<JSONObject> optionalUser = mockUserService
+                                                                .addUser(new JSONObject(user));
 
-                                                if (optionalItem.isEmpty()) {
+                                                if (optionalUser.isEmpty()) {
                                                         return this.responseUtil.writeErrorResponse(exchange,
                                                                         "Error.");
                                                 }
 
                                                 return this.responseUtil.writeResponse(exchange,
-                                                                optionalItem.get().toString());
+                                                                optionalUser.get().toString());
 
                                         } catch (Exception e) {
                                                 // In caso di errore nella conversione, restituisci una risposta di
