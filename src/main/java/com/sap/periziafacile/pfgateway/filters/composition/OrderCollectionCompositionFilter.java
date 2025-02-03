@@ -35,7 +35,7 @@ public class OrderCollectionCompositionFilter implements GatewayFilter {
                 .builder()
                 .build()
                 .get()
-                .uri("http://localhost:8083/orders")
+                .uri(exchange.getRequest().getURI())
                 .retrieve()
                 .bodyToMono(String.class)
                 .flatMap(orders -> {

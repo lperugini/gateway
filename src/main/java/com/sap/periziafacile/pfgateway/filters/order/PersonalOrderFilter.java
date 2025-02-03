@@ -1,5 +1,7 @@
 package com.sap.periziafacile.pfgateway.filters.order;
 
+import java.util.List;
+
 import org.json.JSONObject;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -27,6 +29,12 @@ public class PersonalOrderFilter implements GatewayFilter {
 
         @Override
         public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+                String role = (String) exchange.getAttributes().get("logged_role");
+
+                if (List.of("admin").contains(role)) {
+                        return chain.filter(exchange);
+                }
+
                 Integer loggedId = (Integer) exchange.getAttributes().get("logged_id");
 
                 String path = exchange.getRequest().getPath().toString();
@@ -51,7 +59,8 @@ public class PersonalOrderFilter implements GatewayFilter {
                                                 }
                                         }
 
-                                        return this.responseUtil.writeErrorResponse(exchange, HttpStatus.UNAUTHORIZED,
+                                        return this.responseUtil.writeResponse(exchange,
+                                                        HttpStatus.UNAUTHORIZED,
                                                         "UNAUTHORIZED");
                                 });
         }

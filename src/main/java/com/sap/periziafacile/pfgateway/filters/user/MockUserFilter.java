@@ -64,7 +64,7 @@ public class MockUserFilter implements GatewayFilter {
                                                                 .addUser(new JSONObject(user));
 
                                                 if (optionalUser.isEmpty()) {
-                                                        return this.responseUtil.writeErrorResponse(exchange,
+                                                        return this.responseUtil.writeResponse(exchange,
                                                                         HttpStatus.NOT_FOUND,
                                                                         "Error.");
                                                 }
@@ -75,7 +75,7 @@ public class MockUserFilter implements GatewayFilter {
                                         } catch (Exception e) {
                                                 // In caso di errore nella conversione, restituisci una risposta di
                                                 // errore
-                                                return this.responseUtil.writeErrorResponse(exchange,
+                                                return this.responseUtil.writeResponse(exchange,
                                                                 HttpStatus.BAD_REQUEST,
                                                                 "Invalid JSON body");
                                         }

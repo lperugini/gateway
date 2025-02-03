@@ -54,7 +54,7 @@ public class LoginFilter implements GatewayFilter {
 
                         Optional<JSONObject> optionalUser = mockUserService.getByUsername(username);
                         if (optionalUser.isEmpty()) {
-                            return this.responseUtil.writeErrorResponse(exchange, HttpStatus.NOT_FOUND,
+                            return this.responseUtil.writeResponse(exchange, HttpStatus.NOT_FOUND,
                                     "User not found.");
                         }
 
@@ -62,7 +62,7 @@ public class LoginFilter implements GatewayFilter {
                         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
                         if (!passwordEncoder.matches(password, foundUser.getString("password"))) {
-                            return this.responseUtil.writeErrorResponse(exchange, HttpStatus.UNAUTHORIZED,
+                            return this.responseUtil.writeResponse(exchange, HttpStatus.UNAUTHORIZED,
                                     "Wrong credentials.");
                         }
 
@@ -76,7 +76,7 @@ public class LoginFilter implements GatewayFilter {
                         return this.responseUtil.writeResponse(exchange, response);
                     } catch (Exception e) {
                         // In caso di errore nella conversione, restituisci una risposta di errore
-                        return this.responseUtil.writeErrorResponse(exchange, HttpStatus.BAD_REQUEST,
+                        return this.responseUtil.writeResponse(exchange, HttpStatus.BAD_REQUEST,
                                 "Invalid JSON body");
                     }
                 });

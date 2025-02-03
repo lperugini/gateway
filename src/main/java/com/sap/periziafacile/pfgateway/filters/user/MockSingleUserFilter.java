@@ -50,7 +50,7 @@ public class MockSingleUserFilter implements GatewayFilter {
                 if (mockUserService.deleteUser(itemId)) {
                         return this.responseUtil.writeResponse(exchange, HttpStatus.OK, itemId.toString());
                 }
-                return this.responseUtil.writeErrorResponse(exchange, HttpStatus.BAD_REQUEST, "Invalid JSON body");
+                return this.responseUtil.writeResponse(exchange, HttpStatus.BAD_REQUEST, "Invalid JSON body");
         }
 
         private Mono<Void> returnSingle(ServerWebExchange exchange) {
@@ -96,7 +96,7 @@ public class MockSingleUserFilter implements GatewayFilter {
                                                                 .updateUser(itemId, new JSONObject(item));
 
                                                 if (optionalItem.isEmpty()) {
-                                                        return this.responseUtil.writeErrorResponse(exchange,
+                                                        return this.responseUtil.writeResponse(exchange,
                                                                         HttpStatus.NOT_FOUND,
                                                                         "Error.");
                                                 }
@@ -108,7 +108,7 @@ public class MockSingleUserFilter implements GatewayFilter {
                                         } catch (Exception e) {
                                                 // In caso di errore nella conversione, restituisci una risposta di
                                                 // errore
-                                                return this.responseUtil.writeErrorResponse(exchange,
+                                                return this.responseUtil.writeResponse(exchange,
                                                                 HttpStatus.BAD_REQUEST,
                                                                 "Invalid JSON body");
                                         }

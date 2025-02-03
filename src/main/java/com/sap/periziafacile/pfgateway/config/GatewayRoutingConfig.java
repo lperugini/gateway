@@ -18,6 +18,7 @@ import com.sap.periziafacile.pfgateway.filters.item.MockItemFilter;
 import com.sap.periziafacile.pfgateway.filters.item.MockSingleItemFilter;
 import com.sap.periziafacile.pfgateway.filters.order.OrderPublishFilter;
 import com.sap.periziafacile.pfgateway.filters.order.PersonalOrderFilter;
+import com.sap.periziafacile.pfgateway.filters.order.UserOrdersFilter;
 import com.sap.periziafacile.pfgateway.filters.user.MockPersonalInfoFilter;
 import com.sap.periziafacile.pfgateway.filters.user.MockSingleUserFilter;
 import com.sap.periziafacile.pfgateway.filters.user.MockUserFilter;
@@ -25,7 +26,7 @@ import com.sap.periziafacile.pfgateway.filters.user.MockUserFilter;
 import reactor.core.publisher.Mono;
 
 @Configuration
-public class Config {
+public class GatewayRoutingConfig {
 
         private final String GATEWAYURL = "http://localhost:8080";
         private final String ORDERSERVICEURL = "http://localhost:8083";
@@ -36,6 +37,7 @@ public class Config {
                         SingleOrderCompositionFilter singleOrderCompositionFilter,
                         OrderCollectionCompositionFilter orderCollectionCompositionFilter,
                         PersonalOrderFilter personalOrderFilter,
+                        UserOrdersFilter userOrdersFilter,
                         OrderPublishFilter orderPublishFilter,
                         MockRegisterFilter mockRegisterFilter,
                         LoginFilter loginFilter,
@@ -101,7 +103,7 @@ public class Config {
                                                 .and()
                                                 .method(HttpMethod.GET)
                                                 .filters(f -> f.filter(new AuthFilter(
-                                                                List.of("user", "admin", "collaborator")))
+                                                                List.of("user", "admin")))
                                                                 .filter(mockPersonalInfoFilter))
                                                 .uri("no://op"))
                                 .route("getusers", r -> r
@@ -146,7 +148,8 @@ public class Config {
                                                 .and()
                                                 .method(HttpMethod.GET)
                                                 .filters(f -> f.filter(new AuthFilter(
-                                                                List.of("user", "collaborator", "admin")))
+                                                                List.of("user", "admin")))
+                                                                .filter(userOrdersFilter)
                                                                 .filter(orderCollectionCompositionFilter)
                                                                 .modifyResponseBody(String.class, String.class,
                                                                                 (exchange, originalBody) -> {

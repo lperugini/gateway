@@ -59,11 +59,11 @@ public class MockRegisterFilter implements GatewayFilter {
                             return this.responseUtil.writeResponse(exchange, HttpStatus.CREATED,
                                     newUser.get().toString());
                         }
-                        return this.responseUtil.writeErrorResponse(exchange, HttpStatus.BAD_REQUEST,
+                        return this.responseUtil.writeResponse(exchange, HttpStatus.BAD_REQUEST,
                                 "Username not valid.");
                     } catch (Exception e) {
                         // In caso di errore nella conversione, restituisci una risposta di errore
-                        return this.responseUtil.writeErrorResponse(exchange, HttpStatus.BAD_REQUEST,
+                        return this.responseUtil.writeResponse(exchange, HttpStatus.BAD_REQUEST,
                                 "Invalid JSON body");
                     }
                 });
