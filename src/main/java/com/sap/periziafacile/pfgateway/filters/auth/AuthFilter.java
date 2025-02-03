@@ -31,7 +31,11 @@ public class AuthFilter implements GatewayFilter {
                 if (!headers.containsKey("Authorization"))
                         return returnUnauthorized(exchange);
 
-                String auth = headers.get("Authorization").stream().findFirst().orElse("");
+                String auth = headers
+                                .get("Authorization")
+                                .stream()
+                                .findFirst()
+                                .orElse("");
 
                 if (!(auth.startsWith("Bearer ")))
                         return returnUnauthorized(exchange);
@@ -50,6 +54,7 @@ public class AuthFilter implements GatewayFilter {
                 exchange.getAttributes().put("logged_id", this.jwtUtil.getIdFromToken(token));
                 exchange.getAttributes().put("logged_role", this.jwtUtil.getRoleFromToken(token));
 
+                System.out.println("auth");
                 return chain.filter(exchange);
         }
 
