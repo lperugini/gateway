@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
@@ -53,14 +54,16 @@ public class LoginFilter implements GatewayFilter {
 
                         Optional<JSONObject> optionalUser = mockUserService.getByUsername(username);
                         if (optionalUser.isEmpty()) {
-                            return this.responseUtil.writeErrorResponse(exchange, "User not found.");
+                            return this.responseUtil.writeErrorResponse(exchange, HttpStatus.NOT_FOUND,
+                                    "User not found.");
                         }
 
                         JSONObject foundUser = optionalUser.get();
                         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
                         if (!passwordEncoder.matches(password, foundUser.getString("password"))) {
-                            return this.responseUtil.writeErrorResponse(exchange, "Wrong credentials.");
+                            return this.responseUtil.writeErrorResponse(exchange, HttpStatus.UNAUTHORIZED,
+                                    "Wrong credentials.");
                         }
 
                         String token = new JwtUtil().generateToken(
@@ -73,7 +76,8 @@ public class LoginFilter implements GatewayFilter {
                         return this.responseUtil.writeResponse(exchange, response);
                     } catch (Exception e) {
                         // In caso di errore nella conversione, restituisci una risposta di errore
-                        return this.responseUtil.writeErrorResponse(exchange, "Invalid JSON body");
+                        return this.responseUtil.writeErrorResponse(exchange, HttpStatus.BAD_REQUEST,
+                                "Invalid JSON body");
                     }
                 });
     }

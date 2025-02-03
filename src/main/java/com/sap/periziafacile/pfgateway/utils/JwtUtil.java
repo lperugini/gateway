@@ -52,14 +52,14 @@ public class JwtUtil {
         return (String) claims.get("role");
     }
 
-    public String getIdFromToken(String token) {
+    public Integer getIdFromToken(String token) {
         Claims claims = Jwts
                 .parser()
                 .verifyWith(getKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
-        return (String) claims.get("id");
+        return (Integer) claims.get("id");
     }
     
     public boolean validateToken(String token) {

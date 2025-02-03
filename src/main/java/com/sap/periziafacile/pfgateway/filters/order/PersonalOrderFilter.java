@@ -1,14 +1,9 @@
 package com.sap.periziafacile.pfgateway.filters.order;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Optional;
-
 import org.json.JSONObject;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
-import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ServerWebExchange;
@@ -20,19 +15,19 @@ import com.sap.periziafacile.pfgateway.utils.ResponseUtil;
 import reactor.core.publisher.Mono;
 
 @Component
-public class PeronalOrderFilter implements GatewayFilter {
+public class PersonalOrderFilter implements GatewayFilter {
 
         private final MockUserService mockUserService;
         private final ObjectMapper objectMapper = new ObjectMapper(); // Per deserializzare JSON
         private final ResponseUtil responseUtil = new ResponseUtil();
 
-        public PeronalOrderFilter(MockUserService mockUserService) {
+        public PersonalOrderFilter(MockUserService mockUserService) {
                 this.mockUserService = mockUserService;
         }
 
         @Override
         public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-                String loggedId = (String) exchange.getAttributes().get("logged_id");
+                Integer loggedId = (Integer) exchange.getAttributes().get("logged_id");
 
                 String path = exchange.getRequest().getPath().toString();
                 String id = path.substring(path.lastIndexOf("/") + 1);
@@ -51,12 +46,13 @@ public class PeronalOrderFilter implements GatewayFilter {
                                         if (jsonOrder.has("user")) {
                                                 Long userid = Long.valueOf(jsonOrder.get("user").toString());
 
-                                                if (userid == Long.valueOf(loggedId)) {
+                                                if (Long.valueOf(loggedId).equals(userid)) {
                                                         return chain.filter(exchange);
                                                 }
                                         }
 
-                                        return this.responseUtil.writeErrorResponse(exchange, "");
+                                        return this.responseUtil.writeErrorResponse(exchange, HttpStatus.UNAUTHORIZED,
+                                                        "UNAUTHORIZED");
                                 });
         }
 

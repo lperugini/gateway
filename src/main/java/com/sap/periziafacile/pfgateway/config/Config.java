@@ -17,7 +17,8 @@ import com.sap.periziafacile.pfgateway.filters.composition.SingleOrderCompositio
 import com.sap.periziafacile.pfgateway.filters.item.MockItemFilter;
 import com.sap.periziafacile.pfgateway.filters.item.MockSingleItemFilter;
 import com.sap.periziafacile.pfgateway.filters.order.OrderPublishFilter;
-import com.sap.periziafacile.pfgateway.filters.user.MockPeronalInfoFilter;
+import com.sap.periziafacile.pfgateway.filters.order.PersonalOrderFilter;
+import com.sap.periziafacile.pfgateway.filters.user.MockPersonalInfoFilter;
 import com.sap.periziafacile.pfgateway.filters.user.MockSingleUserFilter;
 import com.sap.periziafacile.pfgateway.filters.user.MockUserFilter;
 
@@ -34,10 +35,11 @@ public class Config {
                         RouteLocatorBuilder builder,
                         SingleOrderCompositionFilter singleOrderCompositionFilter,
                         OrderCollectionCompositionFilter orderCollectionCompositionFilter,
+                        PersonalOrderFilter personalOrderFilter,
                         OrderPublishFilter orderPublishFilter,
                         MockRegisterFilter mockRegisterFilter,
                         LoginFilter loginFilter,
-                        MockPeronalInfoFilter mockPersonalInfoFilter,
+                        MockPersonalInfoFilter mockPersonalInfoFilter,
                         AuthFilter mockAuthFilter,
                         MockSingleUserFilter mockSingleUserFilter,
                         MockSingleItemFilter mockSingleItemFilter,
@@ -143,7 +145,8 @@ public class Config {
                                                 .path("/orders")
                                                 .and()
                                                 .method(HttpMethod.GET)
-                                                .filters(f -> f.filter(new AuthFilter(List.of("admin")))
+                                                .filters(f -> f.filter(new AuthFilter(
+                                                                List.of("user", "collaborator", "admin")))
                                                                 .filter(orderCollectionCompositionFilter)
                                                                 .modifyResponseBody(String.class, String.class,
                                                                                 (exchange, originalBody) -> {
@@ -157,7 +160,8 @@ public class Config {
                                                 .and()
                                                 .method(HttpMethod.GET)
                                                 .filters(f -> f
-                                                                .filter(new AuthFilter(List.of("admin")))
+                                                                .filter(new AuthFilter(List.of("user", "admin")))
+                                                                .filter(personalOrderFilter)
                                                                 .filter(singleOrderCompositionFilter)
                                                                 .modifyResponseBody(String.class, String.class,
                                                                                 (exchange, originalBody) -> {
@@ -185,10 +189,12 @@ public class Config {
                                                 .and()
                                                 .method(HttpMethod.PUT)
                                                 .filters(f -> f
-                                                                /* .filter(new AuthFilter(List.of(
-                                                                                "user",
-                                                                                "collaborator",
-                                                                                "admin"))) */
+                                                                /*
+                                                                 * .filter(new AuthFilter(List.of(
+                                                                 * "user",
+                                                                 * "collaborator",
+                                                                 * "admin")))
+                                                                 */
                                                                 .modifyResponseBody(String.class, String.class,
                                                                                 (exchange, originalBody) -> {
                                                                                         return Mono.just(originalBody

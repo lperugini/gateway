@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 
@@ -55,12 +56,15 @@ public class MockRegisterFilter implements GatewayFilter {
                                     .addUser(new JSONObject()
                                             .put("username", username)
                                             .put("password", password));
-                            return this.responseUtil.writeResponse(exchange, newUser.get().toString());
+                            return this.responseUtil.writeResponse(exchange, HttpStatus.CREATED,
+                                    newUser.get().toString());
                         }
-                        return this.responseUtil.writeErrorResponse(exchange, "Username not valid.");
+                        return this.responseUtil.writeErrorResponse(exchange, HttpStatus.BAD_REQUEST,
+                                "Username not valid.");
                     } catch (Exception e) {
                         // In caso di errore nella conversione, restituisci una risposta di errore
-                        return this.responseUtil.writeErrorResponse(exchange, "Invalid JSON body");
+                        return this.responseUtil.writeErrorResponse(exchange, HttpStatus.BAD_REQUEST,
+                                "Invalid JSON body");
                     }
                 });
     }

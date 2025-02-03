@@ -1,20 +1,18 @@
 package com.sap.periziafacile.pfgateway.filters.composition;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 import org.json.JSONObject;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
-import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ServerWebExchange;
 
 import com.sap.periziafacile.pfgateway.services.MockItemService;
 import com.sap.periziafacile.pfgateway.services.MockUserService;
+import com.sap.periziafacile.pfgateway.utils.ResponseUtil;
 
 import reactor.core.publisher.Mono;
 
@@ -23,6 +21,7 @@ public class SingleOrderCompositionFilter implements GatewayFilter {
 
     private final MockItemService mockItemService;
     private final MockUserService mockUserService;
+    private final ResponseUtil responseUtil = new ResponseUtil();
 
     public SingleOrderCompositionFilter(MockItemService mockItemService, MockUserService mockUserService) {
         this.mockItemService = mockItemService;
@@ -30,7 +29,7 @@ public class SingleOrderCompositionFilter implements GatewayFilter {
     }
 
     @Override
-        public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+    public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String path = exchange.getRequest().getPath().toString();
         String id = path.substring(path.lastIndexOf("/") + 1);
         Long orderId = Long.valueOf(id);
@@ -45,7 +44,7 @@ public class SingleOrderCompositionFilter implements GatewayFilter {
                 .flatMap(order -> {
                     JSONObject jsonOrder = new JSONObject(order);
                     JSONObject jsonResponse = new JSONObject().put("order", jsonOrder);
-                    
+
                     if (jsonOrder.has("item") && jsonOrder.has("user")) {
                         Long itemid = Long.valueOf(jsonOrder.get("item").toString());
                         Long userid = Long.valueOf(jsonOrder.get("user").toString());
@@ -59,12 +58,9 @@ public class SingleOrderCompositionFilter implements GatewayFilter {
                         }
                     }
 
-                    exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
-                    byte[] responseBytes = jsonResponse.toString().getBytes(StandardCharsets.UTF_8);
-                    DataBuffer buffer = exchange.getResponse().bufferFactory().wrap(responseBytes);
-
-                    exchange.getResponse().setStatusCode(HttpStatus.OK);
-                    return exchange.getResponse().writeWith(Mono.just(buffer));
+                    return this.responseUtil.writeResponse(exchange,
+                            HttpStatus.OK,
+                            jsonResponse.toString());
                 });
     }
 

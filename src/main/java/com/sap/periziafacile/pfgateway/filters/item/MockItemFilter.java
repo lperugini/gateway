@@ -9,11 +9,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
-import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 
@@ -64,16 +62,19 @@ public class MockItemFilter implements GatewayFilter {
 
                                                 if (optionalItem.isEmpty()) {
                                                         return this.responseUtil.writeErrorResponse(exchange,
+                                                                        HttpStatus.NOT_FOUND,
                                                                         "Error.");
                                                 }
 
                                                 return this.responseUtil.writeResponse(exchange,
+                                                                HttpStatus.CREATED,
                                                                 optionalItem.get().toString());
 
                                         } catch (Exception e) {
                                                 // In caso di errore nella conversione, restituisci una risposta di
                                                 // errore
                                                 return this.responseUtil.writeErrorResponse(exchange,
+                                                                HttpStatus.BAD_REQUEST,
                                                                 "Invalid JSON body");
                                         }
                                 });
@@ -91,14 +92,9 @@ public class MockItemFilter implements GatewayFilter {
                                 new JSONObject()
                                                 .put("itemList", itemList));
 
-                // Configura l'header e il body della risposta
-                exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
-                byte[] responseBytes = jsonResponse.toString().getBytes(StandardCharsets.UTF_8);
-                DataBuffer buffer = exchange.getResponse().bufferFactory().wrap(responseBytes);
-
-                // Imposta lo stato HTTP e restituisci la risposta mock
-                exchange.getResponse().setStatusCode(HttpStatus.OK);
-                return exchange.getResponse().writeWith(Mono.just(buffer));
+                return this.responseUtil.writeResponse(exchange,
+                                HttpStatus.OK,
+                                jsonResponse.toString());
         }
 
 }

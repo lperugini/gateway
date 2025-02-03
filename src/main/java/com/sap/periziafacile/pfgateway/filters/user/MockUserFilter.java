@@ -65,16 +65,18 @@ public class MockUserFilter implements GatewayFilter {
 
                                                 if (optionalUser.isEmpty()) {
                                                         return this.responseUtil.writeErrorResponse(exchange,
+                                                                        HttpStatus.NOT_FOUND,
                                                                         "Error.");
                                                 }
 
-                                                return this.responseUtil.writeResponse(exchange,
+                                                return this.responseUtil.writeResponse(exchange, HttpStatus.OK,
                                                                 optionalUser.get().toString());
 
                                         } catch (Exception e) {
                                                 // In caso di errore nella conversione, restituisci una risposta di
                                                 // errore
                                                 return this.responseUtil.writeErrorResponse(exchange,
+                                                                HttpStatus.BAD_REQUEST,
                                                                 "Invalid JSON body");
                                         }
                                 });
@@ -92,14 +94,9 @@ public class MockUserFilter implements GatewayFilter {
                                 new JSONObject()
                                                 .put("userList", userList));
 
-                // Configura l'header e il body della risposta
-                exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
-                byte[] responseBytes = jsonResponse.toString().getBytes(StandardCharsets.UTF_8);
-                DataBuffer buffer = exchange.getResponse().bufferFactory().wrap(responseBytes);
-
-                // Imposta lo stato HTTP e restituisci la risposta mock
-                exchange.getResponse().setStatusCode(HttpStatus.OK);
-                return exchange.getResponse().writeWith(Mono.just(buffer));
+                return this.responseUtil.writeResponse(exchange,
+                                HttpStatus.OK,
+                                jsonResponse.toString());
         }
 
 }

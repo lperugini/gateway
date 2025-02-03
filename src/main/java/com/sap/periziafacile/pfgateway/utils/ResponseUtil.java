@@ -30,26 +30,26 @@ public class ResponseUtil {
             DataBuffer buffer = response.bufferFactory().wrap(responseBody);
             return response.writeWith(Flux.just(buffer));
         } catch (Exception e) {
-            return writeErrorResponse(exchange, "Failed to write response");
+            return writeErrorResponse(exchange, HttpStatus.INTERNAL_SERVER_ERROR, "Failed to write response");
         }
     }
 
-    public Mono<Void> writeResponse(ServerWebExchange exchange, String content) {
+    public Mono<Void> writeResponse(ServerWebExchange exchange, HttpStatus status, String content) {
         try {
             byte[] responseBytes = content.getBytes(StandardCharsets.UTF_8);
             DataBuffer buffer = exchange.getResponse().bufferFactory().wrap(responseBytes);
 
             // Imposta lo stato HTTP e restituisci la risposta mock
-            exchange.getResponse().setStatusCode(HttpStatus.OK);
+            exchange.getResponse().setStatusCode(status);
             return exchange.getResponse().writeWith(Mono.just(buffer));
         } catch (Exception e) {
-            return writeErrorResponse(exchange, "Failed to write response");
+            return writeErrorResponse(exchange, HttpStatus.INTERNAL_SERVER_ERROR, "Failed to write response");
         }
     }
 
-    public Mono<Void> writeErrorResponse(ServerWebExchange exchange, String message) {
+    public Mono<Void> writeErrorResponse(ServerWebExchange exchange, HttpStatus status, String message) {
         ServerHttpResponse response = exchange.getResponse();
-        response.setStatusCode(org.springframework.http.HttpStatus.BAD_REQUEST);
+        response.setStatusCode(status);
         response.getHeaders().add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 
         String errorResponse = "{\"error\": \"" + message + "\"}";

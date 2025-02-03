@@ -5,16 +5,20 @@ import org.json.JSONObject;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 
 import com.sap.periziafacile.pfgateway.messaging.OrderMessageConfig;
+import com.sap.periziafacile.pfgateway.utils.ResponseUtil;
+
 import reactor.core.publisher.Mono;
 
 @Component
 public class OrderPublishFilter implements GatewayFilter {
 
     private final RabbitTemplate rabbitTemplate;
+    private final ResponseUtil responseUtil = new ResponseUtil();
 
     public OrderPublishFilter(RabbitTemplate rabbitTemplate) {
         this.rabbitTemplate = rabbitTemplate;
@@ -36,16 +40,16 @@ public class OrderPublishFilter implements GatewayFilter {
                     JSONObject orderJson = new JSONObject(body);
                     orderJson.put("timestamp", System.currentTimeMillis()); // Aggiunge un timestamp
 
-                    System.out.println(orderJson);
-
                     // Pubblica l'ordine su RabbitMQ
                     rabbitTemplate.convertAndSend(
                             OrderMessageConfig.EXCHANGE_NAME,
                             OrderMessageConfig.ROUTING_KEY,
                             orderJson.toString());
 
-                    System.out.println("Published message: " + orderJson.toString());
-                    return Mono.empty();
+                    return this.responseUtil.writeResponse(exchange,
+                            HttpStatus.CREATED,
+                            "");
+
                 });
     }
 

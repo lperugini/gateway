@@ -33,7 +33,7 @@ public class AuthFilter implements GatewayFilter {
 
                 String auth = headers.get("Authorization").stream().findFirst().orElse("");
 
-                if (!(auth.equals("") && auth.startsWith("Bearer ")))
+                if (!(auth.startsWith("Bearer ")))
                         return returnUnauthorized(exchange);
 
                 String token = auth.substring(7);
@@ -47,7 +47,7 @@ public class AuthFilter implements GatewayFilter {
                         return returnUnauthorized(exchange);
 
                 exchange.getAttributes().put("logged_username", this.jwtUtil.getUsernameFromToken(token));
-                exchange.getAttributes().put("logged_id", this.jwtUtil.getUsernameFromToken(token));
+                exchange.getAttributes().put("logged_id", this.jwtUtil.getIdFromToken(token));
 
                 return chain.filter(exchange);
         }
