@@ -1,6 +1,7 @@
 package com.sap.periziafacile.pfgateway.filters.order;
 
 import java.nio.charset.StandardCharsets;
+
 import org.json.JSONObject;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -39,7 +40,7 @@ public class OrderPublishFilter implements GatewayFilter {
                 .flatMap(body -> {
                     JSONObject orderJson = new JSONObject(body);
                     orderJson.put("timestamp", System.currentTimeMillis()); // Aggiunge un timestamp
-
+                    
                     // Pubblica l'ordine su RabbitMQ
                     rabbitTemplate.convertAndSend(
                             OrderMessageConfig.EXCHANGE_NAME,

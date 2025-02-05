@@ -192,12 +192,9 @@ public class GatewayRoutingConfig {
                                                 .and()
                                                 .method(HttpMethod.PUT)
                                                 .filters(f -> f
-                                                                /*
-                                                                 * .filter(new AuthFilter(List.of(
-                                                                 * "user",
-                                                                 * "collaborator",
-                                                                 * "admin")))
-                                                                 */
+                                                                .filter(new AuthFilter(List.of(
+                                                                                "user",
+                                                                                "admin")))
                                                                 .modifyResponseBody(String.class, String.class,
                                                                                 (exchange, originalBody) -> {
                                                                                         return Mono.just(originalBody

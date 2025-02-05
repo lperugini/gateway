@@ -88,10 +88,15 @@ public class MockItemFilter implements GatewayFilter {
 
                 itemList.putAll(items);
 
-                JSONObject jsonResponse = new JSONObject().put("_embedded",
-                                new JSONObject()
-                                                .put("itemList", itemList));
-
+                JSONObject jsonResponse = new JSONObject()
+                                .put("_embedded",
+                                                new JSONObject()
+                                                                .put("itemList", itemList))
+                                .put("_links",
+                                                new JSONObject()
+                                                                .put("self",
+                                                                                new JSONObject()
+                                                                                                .put("href", "http://localhost:8080/items")));
                 return this.responseUtil.writeResponse(exchange,
                                 HttpStatus.OK,
                                 jsonResponse.toString());

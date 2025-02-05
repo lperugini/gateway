@@ -28,12 +28,13 @@ public class MockUserService {
                                 .put("password", passwordEncoder.encode("fbaggins"))
                                 .put("_links", new JSONObject()
                                                 .put("self", new JSONObject()
-                                                                .put("href", "/users/1"))
+                                                                .put("method", "GET")
+                                                                .put("href", "http://localhost:8080/users/1"))
                                                 .put("update", new JSONObject()
-                                                                .put("href", "/users/1")
+                                                                .put("href", "http://localhost:8080/users/1")
                                                                 .put("method", "PUT"))
                                                 .put("delete", new JSONObject()
-                                                                .put("href", "/users/1")
+                                                                .put("href", "http://localhost:8080/users/1")
                                                                 .put("method", "DELETE")));
 
                 JSONObject jsonUser2 = new JSONObject()
@@ -46,12 +47,13 @@ public class MockUserService {
                                 .put("password", passwordEncoder.encode("bbaggins"))
                                 .put("_links", new JSONObject()
                                                 .put("self", new JSONObject()
-                                                                .put("href", "/users/2"))
+                                                                .put("method", "GET")
+                                                                .put("href", "http://localhost:8080/users/2"))
                                                 .put("update", new JSONObject()
-                                                                .put("href", "/users/2")
+                                                                .put("href", "http://localhost:8080/users/2")
                                                                 .put("method", "PUT"))
                                                 .put("delete", new JSONObject()
-                                                                .put("href", "/users/2")
+                                                                .put("href", "http://localhost:8080/users/2")
                                                                 .put("method", "DELETE")));
 
                 JSONObject jsonUser3 = new JSONObject()
@@ -64,12 +66,13 @@ public class MockUserService {
                                 .put("password", passwordEncoder.encode("leonardo1"))
                                 .put("_links", new JSONObject()
                                                 .put("self", new JSONObject()
-                                                                .put("href", "/users/3"))
+                                                                .put("method", "GET")
+                                                                .put("href", "http://localhost:8080/users/3"))
                                                 .put("update", new JSONObject()
-                                                                .put("href", "/users/3")
+                                                                .put("href", "http://localhost:8080/users/3")
                                                                 .put("method", "PUT"))
                                                 .put("delete", new JSONObject()
-                                                                .put("href", "/users/2")
+                                                                .put("href", "http://localhost:8080/users/2")
                                                                 .put("method", "DELETE")));
 
                 JSONObject jsonUser4 = new JSONObject()
@@ -82,12 +85,13 @@ public class MockUserService {
                                 .put("password", passwordEncoder.encode("casagrande"))
                                 .put("_links", new JSONObject()
                                                 .put("self", new JSONObject()
-                                                                .put("href", "/users/4"))
+                                                                .put("method", "GET")
+                                                                .put("href", "http://localhost:8080/users/4"))
                                                 .put("update", new JSONObject()
-                                                                .put("href", "/users/4")
+                                                                .put("href", "http://localhost:8080/users/4")
                                                                 .put("method", "PUT"))
                                                 .put("delete", new JSONObject()
-                                                                .put("href", "/users/4")
+                                                                .put("href", "http://localhost:8080/users/4")
                                                                 .put("method", "DELETE")));
 
                 JSONObject jsonUser5 = new JSONObject()
@@ -100,12 +104,13 @@ public class MockUserService {
                                 .put("password", passwordEncoder.encode("medici"))
                                 .put("_links", new JSONObject()
                                                 .put("self", new JSONObject()
-                                                                .put("href", "/users/5"))
+                                                                .put("method", "GET")
+                                                                .put("href", "http://localhost:8080/users/5"))
                                                 .put("update", new JSONObject()
-                                                                .put("href", "/users/5")
+                                                                .put("href", "http://localhost:8080/users/5")
                                                                 .put("method", "PUT"))
                                                 .put("delete", new JSONObject()
-                                                                .put("href", "/users/5")
+                                                                .put("href", "http://localhost:8080/users/5")
                                                                 .put("method", "DELETE")));
 
                 JSONObject jsonUser6 = new JSONObject()
@@ -118,12 +123,13 @@ public class MockUserService {
                                 .put("password", passwordEncoder.encode("ferrari"))
                                 .put("_links", new JSONObject()
                                                 .put("self", new JSONObject()
-                                                                .put("href", "/users/6"))
+                                                                .put("method", "GET")
+                                                                .put("href", "http://localhost:8080/users/6"))
                                                 .put("update", new JSONObject()
-                                                                .put("href", "/users/6")
+                                                                .put("href", "http://localhost:8080/users/6")
                                                                 .put("method", "PUT"))
                                                 .put("delete", new JSONObject()
-                                                                .put("href", "/users/6")
+                                                                .put("href", "http://localhost:8080/users/6")
                                                                 .put("method", "DELETE")));
 
                 users.add(jsonUser1);
@@ -167,12 +173,16 @@ public class MockUserService {
                                         .put("password", passwordEncoder.encode(password))
                                         .put("_links", new JSONObject()
                                                         .put("self", new JSONObject()
-                                                                        .put("href", "/users/" + id.toString()))
+                                                                        .put("method", "GET")
+                                                                        .put("href", "http://localhost:8080/users/"
+                                                                                        + id.toString()))
                                                         .put("update", new JSONObject()
-                                                                        .put("href", "/users/" + id.toString())
+                                                                        .put("href", "http://localhost:8080/users/"
+                                                                                        + id.toString())
                                                                         .put("method", "PUT"))
                                                         .put("delete", new JSONObject()
-                                                                        .put("href", "/users/" + id.toString())
+                                                                        .put("href", "http://localhost:8080/users/"
+                                                                                        + id.toString())
                                                                         .put("method", "DELETE")));
                         users.add(jsonUser);
                         return Optional.of(jsonUser);
@@ -199,12 +209,15 @@ public class MockUserService {
                                         .put("password", existingUser.get().getString("password"))
                                         .put("_links", new JSONObject()
                                                         .put("self", new JSONObject()
-                                                                        .put("href", "/users/" + id.toString()))
+                                                                        .put("href", "http://localhost:8080/users/"
+                                                                                        + id.toString()))
                                                         .put("update", new JSONObject()
-                                                                        .put("href", "/users/" + id.toString())
+                                                                        .put("href", "http://localhost:8080/users/"
+                                                                                        + id.toString())
                                                                         .put("method", "PUT"))
                                                         .put("delete", new JSONObject()
-                                                                        .put("href", "/users/" + id.toString())
+                                                                        .put("href", "http://localhost:8080/users/"
+                                                                                        + id.toString())
                                                                         .put("method", "DELETE")));
 
                         users.removeIf(user -> user.get("id").equals(id));

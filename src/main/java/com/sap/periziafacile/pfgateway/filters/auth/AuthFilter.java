@@ -54,7 +54,6 @@ public class AuthFilter implements GatewayFilter {
                 exchange.getAttributes().put("logged_id", this.jwtUtil.getIdFromToken(token));
                 exchange.getAttributes().put("logged_role", this.jwtUtil.getRoleFromToken(token));
 
-                System.out.println("auth");
                 return chain.filter(exchange);
         }
 

@@ -1,10 +1,9 @@
 package com.sap.periziafacile.pfgateway;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -12,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
 
 import com.sap.periziafacile.pfgateway.utils.JwtUtil;
 

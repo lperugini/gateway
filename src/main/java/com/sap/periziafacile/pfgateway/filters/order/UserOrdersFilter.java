@@ -3,12 +3,9 @@ package com.sap.periziafacile.pfgateway.filters.order;
 import java.net.URI;
 import java.util.List;
 
-import org.json.JSONObject;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ServerWebExchange;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,7 +31,6 @@ public class UserOrdersFilter implements GatewayFilter {
                 Integer loggedId = (Integer) exchange.getAttributes().get("logged_id");
 
                 if (List.of("admin").contains(role)) {
-                        System.out.println("admin");
                         return chain.filter(exchange);
                 }
 

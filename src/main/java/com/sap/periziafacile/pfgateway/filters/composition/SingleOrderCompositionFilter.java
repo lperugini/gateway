@@ -34,9 +34,6 @@ public class SingleOrderCompositionFilter implements GatewayFilter {
         String id = path.substring(path.lastIndexOf("/") + 1);
         Long orderId = Long.valueOf(id);
 
-        System.out.println("composition");
-
-
         return WebClient
                 .builder()
                 .build()
