@@ -14,6 +14,7 @@ import com.sap.periziafacile.pfgateway.filters.auth.LoginFilter;
 import com.sap.periziafacile.pfgateway.filters.auth.MockRegisterFilter;
 import com.sap.periziafacile.pfgateway.filters.composition.OrderCollectionCompositionFilter;
 import com.sap.periziafacile.pfgateway.filters.composition.SingleOrderCompositionFilter;
+import com.sap.periziafacile.pfgateway.filters.fallback.FallbackFilter;
 import com.sap.periziafacile.pfgateway.filters.item.MockItemFilter;
 import com.sap.periziafacile.pfgateway.filters.item.MockSingleItemFilter;
 import com.sap.periziafacile.pfgateway.filters.order.OrderPublishFilter;
@@ -34,6 +35,7 @@ public class GatewayRoutingConfig {
         @Bean
         RouteLocator customRouteLocator(
                         RouteLocatorBuilder builder,
+                        FallbackFilter fallbackFilter,
                         SingleOrderCompositionFilter singleOrderCompositionFilter,
                         OrderCollectionCompositionFilter orderCollectionCompositionFilter,
                         PersonalOrderFilter personalOrderFilter,
@@ -147,8 +149,11 @@ public class GatewayRoutingConfig {
                                                 .path("/orders")
                                                 .and()
                                                 .method(HttpMethod.GET)
-                                                .filters(f -> f.filter(new AuthFilter(
-                                                                List.of("user", "admin")))
+                                                .filters(f -> f
+                                                                .circuitBreaker(config -> config
+                                                                                .setName("ordersCircuitBreaker")
+                                                                                .setFallbackUri("forward:/fallback"))
+                                                                .filter(new AuthFilter(List.of("user", "admin")))
                                                                 .filter(userOrdersFilter)
                                                                 .filter(orderCollectionCompositionFilter)
                                                                 .modifyResponseBody(String.class, String.class,
@@ -163,6 +168,9 @@ public class GatewayRoutingConfig {
                                                 .and()
                                                 .method(HttpMethod.GET)
                                                 .filters(f -> f
+                                                                .circuitBreaker(config -> config
+                                                                                .setName("ordersCircuitBreaker")
+                                                                                .setFallbackUri("forward:/fallback"))
                                                                 .filter(new AuthFilter(List.of("user", "admin")))
                                                                 .filter(personalOrderFilter)
                                                                 .filter(singleOrderCompositionFilter)
@@ -178,6 +186,9 @@ public class GatewayRoutingConfig {
                                                 .and()
                                                 .method(HttpMethod.POST)
                                                 .filters(f -> f
+                                                                .circuitBreaker(config -> config
+                                                                                .setName("ordersCircuitBreaker")
+                                                                                .setFallbackUri("forward:/fallback"))
                                                                 .filter(new AuthFilter(List.of("user")))
                                                                 .filter(orderPublishFilter)
                                                                 .modifyResponseBody(String.class, String.class,
@@ -192,6 +203,9 @@ public class GatewayRoutingConfig {
                                                 .and()
                                                 .method(HttpMethod.PUT)
                                                 .filters(f -> f
+                                                                .circuitBreaker(config -> config
+                                                                                .setName("ordersCircuitBreaker")
+                                                                                .setFallbackUri("forward:/fallback"))
                                                                 .filter(new AuthFilter(List.of(
                                                                                 "user",
                                                                                 "admin")))
@@ -206,7 +220,11 @@ public class GatewayRoutingConfig {
                                                 .path("/orders/{id}")
                                                 .and()
                                                 .method(HttpMethod.DELETE)
-                                                .filters(f -> f.filter(new AuthFilter(List.of("user", "admin")))
+                                                .filters(f -> f
+                                                                .circuitBreaker(config -> config
+                                                                                .setName("ordersCircuitBreaker")
+                                                                                .setFallbackUri("forward:/fallback"))
+                                                                .filter(new AuthFilter(List.of("user", "admin")))
                                                                 .modifyResponseBody(String.class, String.class,
                                                                                 (exchange, originalBody) -> {
                                                                                         return Mono.just(originalBody
@@ -214,7 +232,10 @@ public class GatewayRoutingConfig {
                                                                                                                         GATEWAYURL));
                                                                                 }))
                                                 .uri(ORDERSERVICEURL))
-
+                                .route("fallback", r -> r
+                                                .path("/fallback")
+                                                .filters(f -> f.filter(fallbackFilter))
+                                                .uri("no://op"))
                                 .build();
         }
 
