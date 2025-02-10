@@ -35,17 +35,17 @@ public class LoginFilter implements GatewayFilter {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        // Legge il body della richiesta
+
         return DataBufferUtils.join(exchange.getRequest().getBody())
                 .flatMap(dataBuffer -> {
-                    // Converti il DataBuffer in una stringa
+
                     byte[] bodyBytes = new byte[dataBuffer.readableByteCount()];
                     dataBuffer.read(bodyBytes);
-                    DataBufferUtils.release(dataBuffer); // Rilascia il buffer
+                    DataBufferUtils.release(dataBuffer); 
+                    
                     String body = new String(bodyBytes, StandardCharsets.UTF_8);
 
                     try {
-                        // Converti il JSON in una mappa
                         Map<String, String> user = objectMapper.readValue(body, new TypeReference<>() {
                         });
 

@@ -69,13 +69,15 @@ public class GatewayRoutingConfig {
                                                 .path("/items/{id}")
                                                 .and()
                                                 .method(HttpMethod.GET)
-                                                .filters(f -> f.filter(mockSingleItemFilter))
+                                                .filters(f -> f
+                                                                .filter(mockSingleItemFilter))
                                                 .uri("no://op"))
                                 .route("getitems", r -> r // no-auth needed
                                                 .path("/items")
                                                 .and()
                                                 .method(HttpMethod.GET)
-                                                .filters(f -> f.filter(mockItemFilter))
+                                                .filters(f -> f
+                                                                .filter(mockItemFilter))
                                                 .uri("no://op"))
                                 .route("postitem", r -> r
                                                 .path("/items")
